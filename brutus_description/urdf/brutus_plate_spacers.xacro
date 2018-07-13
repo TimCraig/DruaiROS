@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="brutus_spacers">
+  <xacro:property name="spacer_length" value="0.25"/>
+  <xacro:property name="spacer_radius" value="${0.375*INCH_TO_METER/2}"/>
+  <xacro:property name="spacer_x_front" value="0.200"/>
+  <xacro:property name="spacer_x_middle" value="-0.050"/>
+  <xacro:property name="spacer_x_rear" value="-0.200"/>
+  <xacro:property name="spacer_y_front" value="0.200"/>
+  <xacro:property name="spacer_y_middle" value="0.200"/>
+  <xacro:property name="spacer_y_rear" value="0.050"/>
+
+  <xacro:macro name="brutus_spacer" params="x y">
+    <visual>
+      <origin xyz="${x} ${y} ${spacer_length/2}" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="${spacer_length}" radius="${spacer_radius}"/>
+      </geometry>
+      <material name="Aluminum"/>
+    </visual>
+  </xacro:macro>
+
+  <!-- There are 6 spacers at each level connecting the plates -->
+  <xacro:macro name="brutus_spacer_assy" params="name">
+    <link name="${name}">
+      <brutus_spacer x="${spacer_x_front}" y="${spacer_y_front}"/>
+      <brutus_spacer x="${spacer_x_front}" y="${-spacer_y_front}"/>
+      <brutus_spacer x="${spacer_x_middle}" y="${spacer_y_middle}"/>
+      <brutus_spacer x="${spacer_x_middle}" y="${-spacer_y_middle}"/>
+      <brutus_spacer x="${spacer_x_rear}" y="${spacer_y_rear}"/>
+      <brutus_spacer x="${spacer_x_rear}" y="${-spacer_y_rear}"/>
+    </link>
+  </xacro:macro>
+</robot>

@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<robot name="banebot_wheels" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+   <!-- Banebot Wheel Tire Colors -->
+   <material name="BB_Orange">
+     <color rgba="0.8 0.4 0.0 1.0"/>
+   </material>
+
+   <material name="BB_Blue">
+     <color rgba="0.0 0.0 0.6 1.0"/>
+   </material>
+
+   <material name="BB_Green">
+     <color rgba="0.0 0.8 0.0 1.0"/>
+   </material>
+
+   <material name="BB_Yellow">
+     <color rgba="0.8 0.8 0.0 1.0"/>
+   </material>
+  
+   <!-- Wheels Dimensions -->
+   <xacro:property name="BB_Wheel_Large" value="${4.875*INCH_TO_METER/2}" />
+   <xacro:property name="BB_Wheel_Medium" value="${3.875*INCH_TO_METER/2}" />
+   <xacro:property name="BB_Wheel_Small" value="${2.875*INCH_TO_METER/2}" />
+   <xacro:property name="BB_Wheel_Thick" value="${0.80*INCH_TO_METER}" />
+   <xacro:property name="BB_Tire" value="${0.50*INCH_TO_METER}" />
+
+   <xacro:property name="wheel_mass" value="2.5" /> <!-- in kg-->
+  
+   <xacro:macro name="Banebot_Wheel" params="Name BB_Wheel_Size BB_Tire_Color" >
+      <link name="${Name}">
+         <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+               <cylinder length="${BB_Wheel_Thick}" radius="${BB_Wheel_Size}" />
+            </geometry>
+            <material name="${BB_Tire_Color}" />
+         </visual>
+      </link>
+
+      <link name="${Name}_Hub">
+         <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+               <cylinder length="${BB_Wheel_Thick + 0.001}" radius="${BB_Wheel_Size - BB_Tire}" />
+            </geometry>
+            <material name="Black" />
+         </visual>
+      </link>
+
+    <joint name="${Name}_Hub_Joint" type="fixed">
+      <parent link="${Name}"/>
+      <child link="${Name}_Hub"/>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint>
+   
+  </xacro:macro>
+</robot>

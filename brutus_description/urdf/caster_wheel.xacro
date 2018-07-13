@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="caster">
+  <!-- Wheels Dimensions -->
+  <xacro:property name="Caster_Wheel_Radius" value="${2.0*INCH_TO_METER/2}"/>
+  <xacro:property name="Caster_Wheel_Width" value="${0.5*INCH_TO_METER/2}"/>
+  <xacro:property name="Caster_Height" value="${1.5*INCH_TO_METER}"/>
+  <xacro:property name="Caster_Width" value="${1.0*INCH_TO_METER}"/>
+  <xacro:property name="Caster_Length" value="${1.5*INCH_TO_METER}"/>
+  <xacro:property name="Caster_Axel_XOffset" value="${-0.5*INCH_TO_METER}"/>
+  <xacro:property name="Caster_Axel_ZOffset" value="${-1.0*INCH_TO_METER}"/>
+
+  <xacro:macro name="Caster" params="Name Parent x Vertical_Offset">
+    <link name="${Name}">
+      <visual>
+        <origin xyz="0 0 ${-Caster_Height/2}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${Caster_Length} ${Caster_Width} ${Caster_Height}"/>
+        </geometry>
+        <material name="Silver"/>
+      </visual>
+    </link>
+
+    <link name="Caster_Wheel">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="${Caster_Wheel_Width}" radius="${Caster_Wheel_Radius}"/>
+        </geometry>
+        <material name="Black"/>
+      </visual>
+    </link>
+
+    <joint name="Caster_Wheel_Joint" type="continuous">
+      <parent link="${Name}"/>
+      <child link="Caster_Wheel"/>
+      <origin xyz="${Caster_Axel_XOffset} 0 ${Caster_Axel_ZOffset}" rpy="${M_PI_2} 0 0"/>
+      <axis xyz="0 0 1" rpy="0 0 0"/>
+    </joint>
+
+    <joint name="${Name}_Joint" type="continuous">
+      <parent link="${Parent}"/>
+      <child link="${Name}"/>
+      <origin xyz="${x} 0 ${Vertical_Offset}" rpy="0 0 0"/>
+      <axis xyz="0 0 1" rpy="0  0"/>
+    </joint>
+  </xacro:macro>
+</robot>

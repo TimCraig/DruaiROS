@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="brutus_plate">
+  <!-- Need to produce meshes for the plates!!! -->
+  <xacro:property name="plate_length" value="${24.0*INCH_TO_METER}"/>
+  <xacro:property name="plate_width" value="${18.0*INCH_TO_METER}"/>
+  <xacro:property name="plate_thick" value="0.009"/>
+
+  <xacro:macro name="brutus_plate" params="name material">
+    <link name="${name}">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="${plate_length} ${plate_width} ${plate_thick}"/>
+        </geometry>
+        <material name="${material}"/>
+      </visual>
+    </link>
+  </xacro:macro>
+</robot>

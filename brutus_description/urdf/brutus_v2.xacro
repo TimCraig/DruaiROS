@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+
+<robot name="brutus" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:include filename="$(find brutus_description)/urdf/wheel.xacro" />
+<xacro:include filename="$(find brutus_description)/urdf/brutus_plate.xacro" />
+<xacro:include filename="$(find brutus_description)/urdf/brutus_plate_spacers.xacro" />
+<xacro:include filename="$(find brutus_description)/urdf/common_material.xacro" />
+<xacro:include filename="$(find brutus_description)/urdf/tower.xacro" />
+<xacro:include filename="$(find brutus_description)/urdf/pan_tilt.xacro" />
+<xacro:include filename="$(find brutus_description)/urdf/math.xacro" />
+
+<!-- PROPERTY LIST -->
+<xacro:property name="brutus_height" value="0.6" />
+
+<!-- caster wheel radius and height -->
+<!-- caster wheel mass -->
+<xacro:property name="caster_f_height" value="0.04" />
+<xacro:property name="caster_f_radius" value="0.025" />
+<xacro:property name="caster_f_mass" value="0.5" /> <!-- in kg-->
+
+<!-- caster wheel radius and height -->
+<!-- caster wheel mass -->
+<xacro:property name="caster_b_height" value="0.04" />
+<xacro:property name="caster_b_radius" value="0.025" />
+<xacro:property name="caster_b_mass" value="0.5" /> <!-- in kg-->
+
+      <!-- BASE-FOOTPRINT -->
+      <!-- base_footprint is a fictitious link(frame)
+      that is on the ground right below base_link origin -->
+      <link name="base_footprint">
+        <visual>
+           <origin xyz="0 0 0" rpy="0 0 0" />
+           <geometry>
+               <box size="0.010 0.010 0.010" />
+           </geometry>
+           <material name="Blue" />
+        </visual>
+
+         <collision>
+            <geometry>
+               <box size="${plate_length} ${plate_width} ${brutus_height}" />
+            </geometry>
+            <origin xyz="0 0 ${brutus_height/2}" rpy="0 0 0" />
+         </collision>
+      </link>
+
+<!-- BASE-LINK -->
+<!--Actual body/chassis of the robot-->
+<xacro:brutus_plate name="base_link" material="Gray" />
+<xacro:brutus_plate name="mid_plate" material="Gray" />
+<xacro:brutus_plate name="top_plate" material="Scarlet" />
+<xacro:brutus_spacer_assy name="lower_spacers" />
+<xacro:brutus_spacer_assy name="upper_spacers" />
+<xacro:tower_assy />
+<xacro:pan_tilt />
+
+<joint name="base_footprint_to_base_link" type="fixed">
+  <parent link="base_footprint" />
+  <child link="base_link" />
+  <origin xyz="0 0 ${wheel_radius}" rpy="0 0 0" />
+</joint>
+
+<joint name="base_link_to_lower_spacers" type="fixed">
+  <parent link="base_link" />
+  <child link="lower_spacers" />
+  <origin xyz="0 0 ${plate_thick/2}" rpy="0 0 0" />
+</joint>
+
+<joint name="lower_spacers_to_mid_plate" type="fixed">
+  <parent link="lower_spacers" />
+  <child link="mid_plate" />
+  <origin xyz="0 0 ${spacer_length+plate_thick/2}" rpy="0 0 0" />
+</joint>
+
+<joint name="mid_plate_to_upper_spacers" type="fixed">
+  <parent link="mid_plate" />
+  <child link="upper_spacers" />
+  <origin xyz="0 0 ${plate_thick/2}" rpy="0 0 0" />
+</joint>
+
+<joint name="upper_spacers_to_top_plate" type="fixed">
+  <parent link="upper_spacers" />
+  <child link="top_plate" />
+  <origin xyz="0 0 ${spacer_length+plate_thick/2}" rpy="0 0 0" />
+</joint>
+
+<joint name="top_plate_to_tower" type="fixed">
+  <parent link="top_plate" />
+  <child link="tower" />
+  <origin xyz="${tower_x} 0 ${plate_thick/2}" rpy="0 0 0" />
+</joint>
+
+<joint name="tower_to_pan_tilt" type="fixed">
+  <parent link="tower" />
+  <child link="pan_tilt" />
+  <origin xyz="0 0 ${tower_height+tower_thick}" rpy="0 0 0" />
+</joint>
+
+<!-- Caster -->
+<link name="caster_link">
+   <visual>
+      <origin xyz="0 0.02 0" rpy="${M_PI/2} 0 0" />
+      <geometry>
+         <sphere radius="${caster_f_radius}" />
+      </geometry>
+      <material name="Black" />
+   </visual>
+</link>
+
+<joint name="caster_joint" type="fixed">
+   <parent link="base_link"/>
+   <child link="caster_link"/>
+   <origin xyz="-0.200 0.0 0.007" rpy="${-M_PI/2} 0 0"/>
+</joint>
+
+<!-- Wheel Definitions -->
+<wheel fb="front" lr="right" parent="base_link" translateX="0" translateY="0.5" flipY="1"/>
+<wheel fb="front" lr="left" parent="base_link" translateX="0" translateY="-0.5" flipY="1"/>
+
+</robot>

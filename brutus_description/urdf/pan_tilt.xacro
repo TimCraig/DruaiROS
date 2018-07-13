@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="pan_tilt_mechanism">
+  <xacro:property name="pt_thick" value="0.006"/>
+  <xacro:property name="pt_base_length" value="0.100"/>
+  <xacro:property name="pt_base_width" value="0.200"/>
+  <xacro:property name="pt_base_height" value="0.100"/>
+
+  <xacro:property name="pan_shaft_length" value="0.005"/>
+  <xacro:property name="pan_shaft_radius" value="0.003"/>
+  <xacro:property name="pan_length" value="0.075"/>
+  <xacro:property name="pan_width" value="0.250"/>
+  <xacro:property name="pan_height" value="0.050"/>
+
+  <xacro:property name="tilt_shaft_length" value="0.020"/>
+  <xacro:property name="tilt_shaft_radius" value="0.003"/>
+  <xacro:property name="tilt_length" value="0.050"/>
+  <xacro:property name="tilt_width" value="0.230"/>
+  <xacro:property name="tilt_height" value="0.030"/>
+  <xacro:property name="tilt_shaft_offset" value="0.010"/>
+
+  <!-- Pan Joint is at the top of pan_base, shaft+base thickness+position in side from base -->
+  <xacro:property name="tilt_cradle_offset" value="${pan_shaft_length+pt_thick+0.030}"/>
+  <xacro:macro name="pan_tilt_base" params="name">
+    <link name="${name}">
+      <visual>
+        <origin xyz="0 0 ${pt_base_height/2}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${pt_base_length} ${pt_base_width} ${pt_base_height}"/>
+        </geometry>
+        <material name="Dark_Gray"/>
+      </visual>
+    </link>
+  </xacro:macro>
+
+  <xacro:macro name="pan_cradle" params="cradle_material">
+    <link name="pan_cradle">
+      <!-- Pan motor shaft -->
+      <visual>
+        <origin xyz="0 0 ${pan_shaft_length/2}" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="${pan_shaft_length}" radius="${pan_shaft_radius}"/>
+        </geometry>
+        <material name="${cradle_material}"/>
+      </visual>
+
+      <!-- Bottom panel -->
+      <visual>
+        <origin xyz="0 0 ${pan_shaft_length+(pt_thick/2)}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${pan_length} ${pan_width} ${pt_thick}"/>
+        </geometry>
+        <material name="${cradle_material}"/>
+      </visual>
+
+      <!-- Left side panel -->
+      <visual>
+        <origin xyz="0 ${(pan_width-pt_thick)/2} ${pan_shaft_length+pt_thick+(pan_height/2)}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${pan_length} ${pt_thick} ${pan_height}"/>
+        </geometry>
+        <material name="${cradle_material}"/>
+      </visual>
+
+      <!-- Right side panel -->
+      <visual>
+        <origin xyz="0 ${-(pan_width-pt_thick)/2} ${pan_shaft_length+pt_thick+(pan_height/2)}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${pan_length} ${pt_thick} ${pan_height}"/>
+        </geometry>
+        <material name="${cradle_material}"/>
+      </visual>
+    </link>
+  </xacro:macro>
+
+  <xacro:macro name="tilt_cradle" params="cradle_material">
+    <link name="tilt_cradle">
+      <!-- left tilt shaft -->
+      <visual>
+        <origin xyz="0 ${tilt_width/2+tilt_shaft_length/2} 0" rpy="${-M_PI_2} 0 0"/>
+        <geometry>
+          <cylinder length="${tilt_shaft_length}" radius="${tilt_shaft_radius}"/>
+        </geometry>
+        <material name="${cradle_material}"/>
+      </visual>
+
+      <!-- right tilt shaft -->
+      <visual>
+        <origin xyz="0 ${-(tilt_width/2+tilt_shaft_length/2)} 0" rpy="${-M_PI_2} 0 0"/>
+        <geometry>
+          <cylinder length="${tilt_shaft_length}" radius="${tilt_shaft_radius}"/>
+        </geometry>
+        <material name="${cradle_material}"/>
+      </visual>
+
+      <!-- Bottom panel -->
+      <visual>
+        <origin xyz="0 0 ${-((tilt_height/2)+(pt_thick/2))+tilt_shaft_offset}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${tilt_length} ${tilt_width} ${pt_thick}"/>
+        </geometry>
+        <material name="${cradle_material}"/>
+      </visual>
+
+      <!-- Left side panel -->
+      <visual>
+        <origin xyz="0 ${(tilt_width-pt_thick)/2} ${tilt_shaft_offset}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${tilt_length} ${pt_thick} ${tilt_height}"/>
+        </geometry>
+        <material name="${cradle_material}"/>
+      </visual>
+
+      <!-- Right side panel -->
+      <visual>
+        <origin xyz="0 ${-(tilt_width-pt_thick)/2} ${tilt_shaft_offset}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${tilt_length} ${pt_thick} ${tilt_height}"/>
+        </geometry>
+        <material name="${cradle_material}"/>
+      </visual>
+    </link>
+  </xacro:macro>
+
+  <!-- Asus Xtion Pro Live mesh is in millimeters -->
+  <xacro:property name="M_XTION_SCALE" value="0.001"/>
+  <xacro:macro name="xtion_pro_live">
+    <link name="xtion_pro_live_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="${-M_PI/2} -${M_PI} ${-M_PI/2}"/>
+        <geometry>
+          <mesh filename="package://brutus_description/meshes/asus_xtion_pro_live.dae" scale="${M_XTION_SCALE} ${M_XTION_SCALE} ${M_XTION_SCALE}"/>
+        </geometry>
+      </visual>
+    </link>
+  </xacro:macro>
+
+  <!-- Assemble the pieces -->
+  <xacro:macro name="pan_tilt">
+    <xacro:pan_tilt_base name="pan_tilt"/>
+    <xacro:pan_cradle cradle_material="Green"/>
+    <xacro:tilt_cradle cradle_material="Blue"/>
+    <xacro:xtion_pro_live/>
+
+    <joint name="pan_joint" type="revolute">
+      <parent link="pan_tilt"/>
+      <child link="pan_cradle"/>
+      <origin xyz="0 0 ${pt_base_height}" rpy="0 0 0"/>
+      <axis xyz="0 0 1" rpy="0  0"/>
+      <limit lower="${(-120.0*DEG_TO_RAD)}" upper="${120.0*DEG_TO_RAD}" effort="1.0" velocity="1.0"/>
+    </joint>
+
+    <joint name="tilt_joint" type="revolute">
+      <parent link="pan_cradle"/>
+      <child link="tilt_cradle"/>
+      <origin xyz="0 0 ${tilt_cradle_offset}" rpy="0 0 0"/>
+      <axis xyz="0 1 0" rpy="0  0"/>
+      <limit lower="${-90.0*DEG_TO_RAD}" upper="${90.0*DEG_TO_RAD}" effort="1.0" velocity="1.0"/>
+    </joint>
+
+    <joint name="xtion_pro_joint" type="fixed">
+      <parent link="tilt_cradle"/>
+      <child link="xtion_pro_live_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1" rpy="0  0"/>
+    </joint>
+  </xacro:macro>
+</robot>

@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is the sensor tower that sits on the top plate -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="brutus_tower">
+  <xacro:property name="tower_height" value="0.30"/>
+  <xacro:property name="tower_width" value="0.350"/>
+  <xacro:property name="tower_length" value="0.240"/>
+  <xacro:property name="tower_thick" value="0.006"/>
+  <xacro:property name="tower_x" value="0.100"/>
+  <xacro:property name="tower_y" value="${(tower_width+tower_thick)/2}"/>
+
+  <xacro:macro name="tower_side" params="y">
+    <visual>
+      <origin xyz="0 ${y} ${tower_height/2}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${tower_length} ${tower_thick} ${tower_height}"/>
+      </geometry>
+      <material name="Gray"/>
+    </visual>
+  </xacro:macro>
+
+  <xacro:macro name="tower_deck">
+    <visual>
+      <origin xyz="0 0 ${tower_height+(tower_thick/2)}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${tower_length} ${tower_width+(2*tower_thick)} ${tower_thick}"/>
+      </geometry>
+      <material name="Gray"/>
+    </visual>
+  </xacro:macro>
+
+  <!-- There are 2 sides and the top_deck -->
+  <xacro:macro name="tower_assy">
+    <link name="tower">
+      <xacro:tower_side y="${tower_y}"/>
+      <xacro:tower_side y="${-tower_y}"/>
+      <xacro:tower_deck/>
+    </link>
+  </xacro:macro>
+</robot>

@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="brutus">
+  <xacro:include filename="$(find brutus_description)/urdf/Banebot_Wheel.xacro"/>
+  <xacro:include filename="$(find brutus_description)/urdf/brutus_plate.xacro"/>
+  <xacro:include filename="$(find brutus_description)/urdf/brutus_plate_spacers.xacro"/>
+  <xacro:include filename="$(find brutus_description)/urdf/common_material.xacro"/>
+  <xacro:include filename="$(find brutus_description)/urdf/tower.xacro"/>
+  <xacro:include filename="$(find brutus_description)/urdf/caster_wheel.xacro"/>
+  <xacro:include filename="$(find brutus_description)/urdf/pan_tilt.xacro"/>
+  <xacro:include filename="$(find brutus_description)/urdf/math.xacro"/>
+  <!--
+  PROPERTY LIST
+  -->
+  <xacro:property name="brutus_height" value="0.6"/>
+  <xacro:property name="Caster_XOffset" value="${-9.0*INCH_TO_METER}" />
+  <xacro:property name="wheel_axel_offset" value="${-0.75*INCH_TO_METER/2-plate_thick/2}" />
+  <xacro:property name="Caster_ZOffset" value="${-plate_thick/2}" />
+
+  <!-- BASE-FOOTPRINT -->
+  <!-- base_footprint is a fictitious link(frame)
+      that is on the ground right below base_link origin -->
+  <link name="base_footprint">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.010 0.010 0.010"/>
+      </geometry>
+      <material name="Blue"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="${plate_length} ${plate_width} ${brutus_height}"/>
+      </geometry>
+      <origin xyz="0 0 ${brutus_height/2}" rpy="0 0 0"/>
+    </collision>
+  </link>
+
+  <!-- BASE-LINK -->
+  <!--Actual body/chassis of the robot-->
+  <xacro:brutus_plate name="base_link" material="Gray"/>
+  <xacro:brutus_plate name="mid_plate" material="Gray"/>
+  <xacro:brutus_plate name="top_plate" material="Scarlet"/>
+  <xacro:brutus_spacer_assy name="lower_spacers"/>
+  <xacro:brutus_spacer_assy name="upper_spacers"/>
+  <xacro:tower_assy/>
+  <xacro:pan_tilt/>
+
+  <joint name="base_footprint_to_base_link" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 ${BB_Wheel_Large-wheel_axel_offset}" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="base_link_to_lower_spacers" type="fixed">
+    <parent link="base_link"/>
+    <child link="lower_spacers"/>
+    <origin xyz="0 0 ${plate_thick/2}" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="lower_spacers_to_mid_plate" type="fixed">
+    <parent link="lower_spacers"/>
+    <child link="mid_plate"/>
+    <origin xyz="0 0 ${spacer_length+plate_thick/2}" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="mid_plate_to_upper_spacers" type="fixed">
+    <parent link="mid_plate"/>
+    <child link="upper_spacers"/>
+    <origin xyz="0 0 ${plate_thick/2}" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="upper_spacers_to_top_plate" type="fixed">
+    <parent link="upper_spacers"/>
+    <child link="top_plate"/>
+    <origin xyz="0 0 ${spacer_length+plate_thick/2}" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="top_plate_to_tower" type="fixed">
+    <parent link="top_plate"/>
+    <child link="tower"/>
+    <origin xyz="${tower_x} 0 ${plate_thick/2}" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="tower_to_pan_tilt" type="fixed">
+    <parent link="tower"/>
+    <child link="pan_tilt"/>
+    <origin xyz="0 0 ${tower_height+tower_thick}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Wheel Definitions -->
+  <xacro:Banebot_Wheel Name="Left_Wheel" BB_Wheel_Size="${BB_Wheel_Large}" BB_Tire_Color="BB_Orange" />
+  <xacro:Banebot_Wheel Name="Right_Wheel" BB_Wheel_Size="${BB_Wheel_Large}" BB_Tire_Color="BB_Orange" />
+
+  <joint name="Left_Wheel_Joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="Left_Wheel"/>
+    <origin xyz="0 ${(((plate_width - BB_Tire)/2)-0.0254)} ${wheel_axel_offset}" rpy="${M_PI_2} 0 0"/>
+    <axis xyz="0 1 0" rpy="0  0"/>
+  </joint>
+
+  <joint name="Right_Wheel_Joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="Right_Wheel"/>
+    <origin xyz="0 ${-(((plate_width - BB_Tire)/2)-0.0254)} ${wheel_axel_offset}" rpy="${M_PI_2} 0 0"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+  </joint>
+
+  <xacro:Caster Name="Caster" Parent="base_link" x="${Caster_XOffset}" Vertical_Offset="${Caster_ZOffset}" />
+
+</robot>
